@@ -104,19 +104,6 @@
     </div>
   </section>
 
-  <!-- EJEMPLOS -->
-  <section id="ejemplos" class="max-w-7xl mx-auto px-4 py-10">
-    <div class="flex items-end justify-between">
-      <h2 class="text-3xl font-extrabold">Ejemplos reales</h2>
-      <a href="#form" class="text-emerald-400 hover:underline">Quiero el mío →</a>
-    </div>
-    <div class="grid md:grid-cols-3 gap-6 mt-6">
-      <article class="glass rounded-2xl p-5 shadow-soft text-slate-300">Próximamente mostraremos ejemplos reales.</article>
-      <article class="glass rounded-2xl p-5 shadow-soft text-slate-300">Próximamente mostraremos ejemplos reales.</article>
-      <article class="glass rounded-2xl p-5 shadow-soft text-slate-300">Próximamente mostraremos ejemplos reales.</article>
-    </div>
-  </section>
-
   <!-- PLANES -->
   <section id="planes" class="max-w-7xl mx-auto px-4 py-10">
     <h2 class="text-3xl font-extrabold">Precios</h2>
@@ -167,13 +154,13 @@
         onsubmit="return attachJSON(this)"
         class="grid md:grid-cols-2 gap-4 mt-6">
 
-        <!-- (no usamos _next; manejamos resultado en la misma página) -->
+        <!-- Config para FormSubmit (AJAX) -->
         <input type="hidden" name="_captcha"  value="false">
         <input type="hidden" name="_template" value="table">
         <input type="hidden" name="_subject"  value="Nuevo lead Einstech (Landing)">
         <input type="hidden" name="_replyto"  value="">
 
-        <!-- Honeypot: debe quedar vacío -->
+        <!-- Honeypot -->
         <input type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true"
                style="position:absolute;left:-5000px;top:-5000px;height:0;width:0;opacity:0">
 
@@ -265,17 +252,6 @@
     </div>
   </section>
 
-  <!-- FAQ -->
-  <section class="max-w-6xl mx-auto px-4 pb-20">
-    <h2 class="text-3xl font-extrabold">Preguntas frecuentes</h2>
-    <div class="grid md:grid-cols-2 gap-6 mt-6">
-      <div class="glass rounded-2xl p-6"><h3 class="font-bold">¿Incluye pagos y reservas?</h3><p class="text-slate-300 mt-2">Sí. Usamos tus enlaces de MercadoPago y de Calendly/Cal.com para integrarlo en minutos.</p></div>
-      <div class="glass rounded-2xl p-6"><h3 class="font-bold">¿Puedo usar mi dominio?</h3><p class="text-slate-300 mt-2">Sí. Podés usar tu dominio o quedarte con <span class="text-emerald-400">.einstech.com.ar</span>.</p></div>
-      <div class="glass rounded-2xl p-6"><h3 class="font-bold">¿Cuánto tarda?</h3><p class="text-slate-300 mt-2">En minutos te entregamos el link listo para compartir.</p></div>
-      <div class="glass rounded-2xl p-6"><h3 class="font-bold">¿Qué soporte brindan?</h3><p class="text-slate-300 mt-2">Te ayudamos con DNS/SSL, performance y configuración de enlaces.</p></div>
-    </div>
-  </section>
-
   <footer class="border-t border-white/10">
     <div class="max-w-7xl mx-auto px-4 py-8 text-sm text-slate-400 flex flex-col md:flex-row items-center justify-between gap-3">
       <div>© 2025 Einstech. Todos los derechos reservados.</div>
@@ -289,10 +265,10 @@
     </div>
   </footer>
 
-  <!-- SCRIPT: JSON + AJAX + descarga + backup opcional -->
+  <!-- SCRIPT: JSON + AJAX + descarga + backup opcional + UI de éxito -->
   <script>
     const FORMSUBMIT_EMAIL = "diego.rotryng@gmail.com";
-    const BACKUP_WEBHOOK_URL = ""; // opcional: pegá aquí tu URL de webhook.site si querés copia
+    const BACKUP_WEBHOOK_URL = ""; // opcional: pegá una URL de webhook.site para copia
 
     const RUBRO_COLOR = {
       "Peluquería": "#0ea5e9",
@@ -307,41 +283,37 @@
     function slugify(str){
       return (str||"").toString().trim().toLowerCase()
         .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
-        .replace(/[^a-z0-9\\s-]/g,'')
-        .replace(/\\s+/g,'-').replace(/-+/g,'-');
+        .replace(/[^a-z0-9\s-]/g,'')
+        .replace(/\s+/g,'-').replace(/-+/g,'-');
     }
-
     function toMaps(v){
       v = (v||"").trim();
       if(!v) return "";
-      if(/^https?:\\/\\/(www\\.)?google\\.(com|com\\.ar)\\/maps/i.test(v)) return v;
+      if(/^https?:\/\/(www\.)?google\.(com|com\.ar)\/maps/i.test(v)) return v;
       return "https://www.google.com/maps?q="+encodeURIComponent(v);
     }
-
     async function sendBackup(payload){
       if(!BACKUP_WEBHOOK_URL) return;
       try{
         if(navigator.sendBeacon){
-          const blob = new Blob([JSON.stringify(payload)], {type: "application/json"});
+          const blob = new Blob([JSON.stringify(payload)], {type:"application/json"});
           navigator.sendBeacon(BACKUP_WEBHOOK_URL, blob);
         }else{
-          await fetch(BACKUP_WEBHOOK_URL, {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(payload)});
+          await fetch(BACKUP_WEBHOOK_URL,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
         }
       }catch(e){ console.warn("Backup webhook falló:", e); }
     }
-
     function downloadJSON(filename, jsonString){
       const a = document.createElement('a');
       a.href = URL.createObjectURL(new Blob([jsonString], {type:'application/json'}));
       a.download = filename;
-      document.body.appendChild(a);
-      a.click();
+      document.body.appendChild(a); a.click();
       setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 400);
     }
 
     async function attachJSON(form){
       const box = document.getElementById('postResult');
-      const show = (html) => { box.classList.remove('hidden'); box.innerHTML = html; };
+      const show = html => { box.classList.remove('hidden'); box.innerHTML = html; box.scrollIntoView({behavior:'smooth'}); };
 
       const negocio  = form.negocio?.value?.trim() || "";
       const whatsapp = form.whatsapp?.value?.trim() || "";
@@ -351,8 +323,8 @@
       if(honey){ return false; } // bot
       if(!negocio){ alert('Completá "Nombre del negocio".'); return false; }
       if(!(whatsapp || email)){ alert('Indicá al menos WhatsApp o Email.'); return false; }
-      if(whatsapp && !(/^\+?\d[\\d\\s\\-]{7,}$/.test(whatsapp))){ alert('Ingresá un WhatsApp válido.'); return false; }
-      if(email && !(/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email))){ alert('Ingresá un Email válido.'); return false; }
+      if(whatsapp && !(/^\+?\d[\d\s\-]{7,}$/.test(whatsapp))){ alert('Ingresá un WhatsApp válido.'); return false; }
+      if(email && !(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))){ alert('Ingresá un Email válido.'); return false; }
 
       const rubro   = form.rubro?.value?.trim() || "Otro";
       const color   = RUBRO_COLOR[rubro] || RUBRO_COLOR["Otro"];
@@ -441,6 +413,7 @@
         const fd = new FormData(form);
         const subject = form.querySelector('input[name="_subject"]');
         if(subject && slug) subject.value = `Nuevo lead Einstech • ${slug}`;
+
         const res = await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(FORMSUBMIT_EMAIL)}`, {
           method: "POST",
           headers: { "Accept": "application/json" },
@@ -455,7 +428,19 @@
 
         const data = await res.json();
         if(data.success === "true"){
-          show(`✅ <b>¡Formulario enviado!</b> Debería llegarte a <b>${FORMSUBMIT_EMAIL}</b>.<br>También descargamos el JSON y (si configuraste) enviamos copia al backup.`);
+          // UI de éxito en la misma página (sin redirigir)
+          document.getElementById('leadForm').style.display = 'none';
+          show(`
+            <div class="glass rounded-2xl p-6">
+              <h3 class="text-2xl font-bold text-emerald-400">¡Gracias! 🎉</h3>
+              <p class="mt-2">Recibimos tu solicitud. También descargamos el JSON como respaldo.</p>
+              <p class="mt-2">Si no ves el correo en <b>${FORMSUBMIT_EMAIL}</b> en unos minutos, revisá Spam/Promociones.</p>
+              <div class="mt-4">
+                <a href="#planes" class="btn btn-dark">Ver precios</a>
+                <a href="#form" class="btn btn-primary" onclick="location.reload()">Cargar otro</a>
+              </div>
+            </div>
+          `);
         }else{
           show(`⚠️ <b>Respuesta inesperada de FormSubmit</b>: ${JSON.stringify(data)}`);
         }
