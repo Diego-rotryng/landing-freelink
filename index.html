@@ -23,7 +23,6 @@
     .btn:hover{transform:translateY(-2px);transition:transform .15s ease}
     .input{background:#0e1a33;border:1px solid rgba(255,255,255,.12);padding:.75rem .9rem;border-radius:12px;width:100%}
     .label{font-size:.85rem;color:#bfd0ef}
-    .muted{color:#9eb2ce}
   </style>
 </head>
 <body>
@@ -97,17 +96,16 @@
     </div>
   </section>
 
-  <!-- EJEMPLOS -->
+  <!-- EJEMPLOS (placeholder) -->
   <section id="ejemplos" class="max-w-7xl mx-auto px-4 py-10">
     <div class="flex items-end justify-between">
       <h2 class="text-3xl font-extrabold">Ejemplos reales</h2>
       <a href="#form" class="text-emerald-400 hover:underline">Quiero el mío →</a>
     </div>
     <div class="grid md:grid-cols-3 gap-6 mt-6">
-      <!-- Placeholder de ejemplos (los cargás después) -->
-      <article class="glass rounded-2xl p-5 shadow-soft text-slate-300">Proximamente mostraremos ejemplos reales.</article>
-      <article class="glass rounded-2xl p-5 shadow-soft text-slate-300">Proximamente mostraremos ejemplos reales.</article>
-      <article class="glass rounded-2xl p-5 shadow-soft text-slate-300">Proximamente mostraremos ejemplos reales.</article>
+      <article class="glass rounded-2xl p-5 shadow-soft text-slate-300">Próximamente mostraremos ejemplos reales.</article>
+      <article class="glass rounded-2xl p-5 shadow-soft text-slate-300">Próximamente mostraremos ejemplos reales.</article>
+      <article class="glass rounded-2xl p-5 shadow-soft text-slate-300">Próximamente mostraremos ejemplos reales.</article>
     </div>
   </section>
 
@@ -150,14 +148,24 @@
       <h2 class="text-3xl font-extrabold">Armemos tu página ahora</h2>
       <p class="text-slate-300 mt-1">
         Completá el formulario: <strong>solo es obligatorio “Nombre del negocio” y al menos un medio de contacto (WhatsApp o Email)</strong>.
-        <br/>Cuantos más datos completes, <strong>mejor y más completa</strong> quedará tu página.
+        <br>Cuantos más datos completes, <strong>mejor y más completa</strong> quedará tu página.
       </p>
 
-      <form action="https://formsubmit.co/diego.rotryng@gmail.com" method="POST" class="grid md:grid-cols-2 gap-4 mt-6" id="leadForm">
+      <form
+        onsubmit="return attachJSON(this)"
+        action="https://formsubmit.co/diego.rotryng@gmail.com"
+        method="POST"
+        class="grid md:grid-cols-2 gap-4 mt-6"
+        id="leadForm">
+
+        <!-- FormSubmit config -->
         <input type="hidden" name="_captcha" value="false">
         <input type="hidden" name="_subject" value="Nuevo lead Einstech (Landing)">
         <input type="hidden" name="_template" value="table">
-        <!-- JSON listo viaja oculto -->
+        <input type="hidden" name="_next" value="https://pagina.einstech.com.ar/#gracias">
+        <input type="hidden" name="_replyto" value="">
+        <input type="text"   name="_honey" style="display:none">
+        <!-- Aquí viaja el JSON armado -->
         <input type="hidden" name="json_cliente" id="json_cliente">
 
         <!-- Datos básicos -->
@@ -219,7 +227,7 @@
         </div>
         <div class="md:col-span-2">
           <label class="label">Ubicación (dirección o link de Maps)</label>
-          <input name="ubicacion" type="text" placeholder="Ej: Av. Corrientes 1234, CABA o https://maps.google.com/?q=..." class="input"/>
+          <input name="ubicacion" type="text" placeholder="Av. Corrientes 1234, CABA o https://maps.google.com/?q=..." class="input"/>
         </div>
 
         <!-- Redes -->
@@ -284,12 +292,9 @@
     </div>
   </footer>
 
-  <!-- SCRIPT: valida contacto y arma JSON oculto -->
+  <!-- SCRIPT: arma y adjunta JSON antes de enviar -->
   <script>
-    const form = document.getElementById('leadForm');
-
-    // Color automático por rubro
-    const rubricolor = {
+    const RUBRO_COLOR = {
       "Peluquería": "#0ea5e9",
       "Psicología/Coaching": "#8b5cf6",
       "Gastronomía": "#f59e0b",
@@ -300,78 +305,92 @@
     };
 
     function slugify(str){
-      return (str || "")
-        .toString()
-        .trim()
-        .toLowerCase()
-        .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
-        .replace(/[^a-z0-9\\s-]/g,"")
-        .replace(/\\s+/g,"-")
-        .replace(/-+/g,"-");
+      return (str||"").toString().trim().toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+        .replace(/[^a-z0-9\s-]/g,'')
+        .replace(/\s+/g,'-').replace(/-+/g,'-');
     }
 
-    function toMaps(urlOrAddress){
-      const v = (urlOrAddress || "").trim();
-      if (!v) return "";
-      if (/^https?:\\/\\/(www\\.)?google\\.(com|com\\.ar)\\/maps/i.test(v)) return v;
-      // Si es dirección plana, armamos link a Maps
-      return "https://www.google.com/maps?q=" + encodeURIComponent(v);
+    function toMaps(v){
+      v = (v||"").trim();
+      if(!v) return "";
+      if(/^https?:\/\/(www\.)?google\.(com|com\.ar)\/maps/i.test(v)) return v;
+      return "https://www.google.com/maps?q="+encodeURIComponent(v);
     }
 
-    function buildJSONFromForm(f){
-      const title = (f.negocio?.value || "").trim();
-      const subtitle = (f.descripcion?.value || "").trim();
-      const whatsapp = (f.whatsapp?.value || "").trim();
-      const email = (f.email?.value || "").trim();
-      const rubro = (f.rubro?.value || "Otro").trim();
-      const color = rubricolor[rubro] || rubricolor["Otro"];
-      const slug = slugify(title);
+    function attachJSON(form){
+      // Requisitos mínimos: negocio + (whatsapp o email)
+      const negocio  = form.negocio?.value?.trim() || "";
+      const whatsapp = form.whatsapp?.value?.trim() || "";
+      const email    = form.email?.value?.trim() || "";
 
-      // Productos simples
-      const prods = [];
-      [["prod1_nombre","prod1_precio"],["prod2_nombre","prod2_precio"],["prod3_nombre","prod3_precio"]].forEach(([n,p])=>{
-        const name = f[n]?.value?.trim();
-        const price = f[p]?.value?.trim();
-        if(name){
-          const item = { title: name };
-          if(price && !isNaN(Number(price))) item.price = Number(price);
-          prods.push(item);
-        }
-      });
+      if(!negocio){
+        alert('Completá "Nombre del negocio".');
+        return false;
+      }
+      if(!(whatsapp || email)){
+        alert('Indicá al menos un medio de contacto: WhatsApp o Email.');
+        return false;
+      }
+      if(whatsapp && !(/^\+?\d[\d\s\-]{7,}$/.test(whatsapp))){
+        alert('Ingresá un WhatsApp válido (ej: +54 9 11 1234-5678).');
+        return false;
+      }
+      if(email && !(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))){
+        alert('Ingresá un Email válido (ej: nombre@dominio.com).');
+        return false;
+      }
 
-      // Tags por toggles
+      const rubro   = form.rubro?.value?.trim() || "Otro";
+      const color   = RUBRO_COLOR[rubro] || RUBRO_COLOR["Otro"];
+      const slug    = slugify(negocio);
+
+      // Productos
+      const products = [];
+      [["prod1_nombre","prod1_precio"],["prod2_nombre","prod2_precio"],["prod3_nombre","prod3_precio"]]
+        .forEach(([n,p])=>{
+          const name = form[n]?.value?.trim();
+          const price = form[p]?.value?.trim();
+          if(name){
+            const item = { title: name };
+            if(price && !isNaN(Number(price))) item.price = Number(price);
+            products.push(item);
+          }
+        });
+
+      // Tags
       const tags = [];
-      if (f.tag_reservas?.checked) tags.push("Reservas");
-      if (f.tag_envios?.checked) tags.push("Envíos");
-      if (f.tag_wa?.checked) tags.push("WhatsApp");
+      if(form.tag_reservas?.checked) tags.push("Reservas");
+      if(form.tag_envios?.checked)   tags.push("Envíos");
+      if(form.tag_wa?.checked)       tags.push("WhatsApp");
 
-      // Social
+      // Redes
       const social = {};
-      ["instagram","facebook","tiktok","youtube"].forEach(key=>{
-        const v = f["social_"+key]?.value?.trim();
-        if(v) social[key] = v;
+      ["instagram","facebook","tiktok","youtube"].forEach(k=>{
+        const val = form["social_"+k]?.value?.trim();
+        if(val) social[k] = val;
       });
 
       // Links rápidos
       const links = [];
-      const web = f.web?.value?.trim();
-      if(web) links.push({ icon:"🛒", title:"Sitio web", url:web });
+      const web       = form.web?.value?.trim();
+      const catalogo  = form.catalogo?.value?.trim();
+      const ubic      = form.ubicacion?.value?.trim();
+      const pdf_url   = form.pdf_url?.value?.trim();
 
-      const catalogo = f.catalogo?.value?.trim();
-      if(catalogo) links.push({ icon:"🛍️", title:"Catálogo / Menú", url: catalogo });
+      if(web)      links.push({ icon:"🛒", title:"Sitio web",       url:web });
+      if(catalogo) links.push({ icon:"🛍️", title:"Catálogo / Menú", url:catalogo });
+      if(ubic)     links.push({ icon:"📍", title:"Cómo llegar",     url:toMaps(ubic) });
+      if(pdf_url)  links.push({ icon:"📄", title:"Presentación / PDF", url:pdf_url });
 
-      const ubic = f.ubicacion?.value?.trim();
-      if(ubic) links.push({ icon:"📍", title:"Cómo llegar", url: toMaps(ubic) });
+      // CTA especiales
+      const reserve_url = form.reserve_url?.value?.trim() || "";
+      const payment_url = form.payment_url?.value?.trim() || "";
 
-      const reserve_url = (f.reserve_url?.value || "").trim();
-      const payment_url = (f.payment_url?.value || "").trim();
-      const pdf_url = (f.pdf_url?.value || "").trim();
-      if (pdf_url) links.push({ icon:"📄", title:"Presentación / PDF", url: pdf_url });
-
-      return {
-        // básicos
-        title,
-        subtitle,
+      // Armado final
+      const json = {
+        title: negocio,
+        subtitle: form.descripcion?.value?.trim() || "",
         whatsapp,
         email,
         color,
@@ -380,60 +399,30 @@
         reserve_url,
         payment_url,
         quick_wa_text: "",
-
-        // derivados
         tags,
-        products: prods.slice(0,3),
+        products: products.slice(0,3),
         links: links.slice(0,4),
         social,
-
-        // constantes
         fab: "whatsapp",
         currency: "ARS",
-
-        // meta útil para tu pipeline
         _slug: slug,
         _rubro: rubro
       };
+
+      // Cargar hidden JSON
+      const hidden = document.getElementById('json_cliente');
+      hidden.value = JSON.stringify(json);
+
+      // _replyto con email del cliente
+      const replyto = form.querySelector('input[name="_replyto"]');
+      if(replyto) replyto.value = email;
+
+      // Personalizar subject
+      const subject = form.querySelector('input[name="_subject"]');
+      if(subject && slug) subject.value = `Nuevo lead Einstech • ${slug}`;
+
+      return true; // Enviar
     }
-
-    // Validación: nombre de negocio + al menos un medio de contacto (WA o Email)
-    form.addEventListener('submit', function(e){
-      const negocio = this.negocio.value.trim();
-      const wa = this.whatsapp.value.trim();
-      const em = this.email.value.trim();
-
-      if(!negocio){
-        e.preventDefault();
-        alert('Completá "Nombre del negocio".');
-        return;
-      }
-      const waOk = !wa || /^\\+?\\d[\\d\\s\\-]{7,}$/.test(wa);
-      const emOk = !em || /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(em);
-
-      if(!(wa || em)){
-        e.preventDefault();
-        alert('Indicá al menos un medio de contacto: WhatsApp o Email.');
-        return;
-      }
-      if(wa && !waOk){
-        e.preventDefault();
-        alert('Ingresá un WhatsApp válido (ej: +54 9 11 1234-5678).');
-        return;
-      }
-      if(em && !emOk){
-        e.preventDefault();
-        alert('Ingresá un Email válido (ej: nombre@dominio.com).');
-        return;
-      }
-
-      const json = buildJSONFromForm(this);
-      document.getElementById('json_cliente').value = JSON.stringify(json);
-
-      // Personalizar asunto con slug
-      const subject = this.querySelector('input[name="_subject"]');
-      if(subject && json._slug) subject.value = `Nuevo lead Einstech • ${json._slug}`;
-    });
   </script>
 </body>
 </html>
