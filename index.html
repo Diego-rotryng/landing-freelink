@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="utf-8" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data:; img-src 'self' https: data:; style-src 'self' 'unsafe-inline' https:; script-src 'self' 'unsafe-inline' https:; connect-src 'self' https:; frame-ancestors *; form-action https://formsubmit.co https://webhook.site;">
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Einstech • Página Express Pro</title>
   <meta name="description" content="Tu mini web profesional con WhatsApp, pagos y reservas. Subdominio propio en minutos." />
@@ -96,7 +97,7 @@
     </div>
   </section>
 
-  <!-- EJEMPLOS (placeholder) -->
+  <!-- EJEMPLOS -->
   <section id="ejemplos" class="max-w-7xl mx-auto px-4 py-10">
     <div class="flex items-end justify-between">
       <h2 class="text-3xl font-extrabold">Ejemplos reales</h2>
@@ -155,16 +156,19 @@
         onsubmit="return attachJSON(this)"
         action="https://formsubmit.co/diego.rotryng@gmail.com"
         method="POST"
+        accept-charset="UTF-8"
         class="grid md:grid-cols-2 gap-4 mt-6"
         id="leadForm">
 
-        <!-- FormSubmit config -->
-        <input type="hidden" name="_captcha" value="false">
-        <input type="hidden" name="_subject" value="Nuevo lead Einstech (Landing)">
+        <!-- Config estable FormSubmit -->
+        <input type="hidden" name="_captcha"  value="false">
         <input type="hidden" name="_template" value="table">
-        <input type="hidden" name="_next" value="https://pagina.einstech.com.ar/#gracias">
-        <input type="hidden" name="_replyto" value="">
-        <input type="text"   name="_honey" style="display:none">
+        <input type="hidden" name="_subject"  value="Nuevo lead Einstech (Landing)">
+        <input type="hidden" name="_next"     value="https://pagina.einstech.com.ar/#gracias">
+        <input type="hidden" name="_replyto"  value="">
+        <!-- Honeypot: oculto fuera de pantalla (no usar display:none para evitar autocompletado) -->
+        <input type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true"
+               style="position:absolute;left:-5000px;top:-5000px;height:0;width:0;opacity:0">
         <!-- Aquí viaja el JSON armado -->
         <input type="hidden" name="json_cliente" id="json_cliente">
 
@@ -294,6 +298,7 @@
 
   <!-- SCRIPT: arma y adjunta JSON antes de enviar -->
   <script>
+    // Paleta por rubro (fallback incluido)
     const RUBRO_COLOR = {
       "Peluquería": "#0ea5e9",
       "Psicología/Coaching": "#8b5cf6",
@@ -307,14 +312,14 @@
     function slugify(str){
       return (str||"").toString().trim().toLowerCase()
         .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
-        .replace(/[^a-z0-9\s-]/g,'')
-        .replace(/\s+/g,'-').replace(/-+/g,'-');
+        .replace(/[^a-z0-9\\s-]/g,'')
+        .replace(/\\s+/g,'-').replace(/-+/g,'-');
     }
 
     function toMaps(v){
       v = (v||"").trim();
       if(!v) return "";
-      if(/^https?:\/\/(www\.)?google\.(com|com\.ar)\/maps/i.test(v)) return v;
+      if(/^https?:\\/\\/(www\\.)?google\\.(com|com\\.ar)\\/maps/i.test(v)) return v;
       return "https://www.google.com/maps?q="+encodeURIComponent(v);
     }
 
@@ -332,11 +337,11 @@
         alert('Indicá al menos un medio de contacto: WhatsApp o Email.');
         return false;
       }
-      if(whatsapp && !(/^\+?\d[\d\s\-]{7,}$/.test(whatsapp))){
+      if(whatsapp && !(/^^\\+?\\d[\\d\\s\\-]{7,}$/.test(whatsapp))){
         alert('Ingresá un WhatsApp válido (ej: +54 9 11 1234-5678).');
         return false;
       }
-      if(email && !(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))){
+      if(email && !(/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email))){
         alert('Ingresá un Email válido (ej: nombre@dominio.com).');
         return false;
       }
@@ -410,10 +415,9 @@
       };
 
       // Cargar hidden JSON
-      const hidden = document.getElementById('json_cliente');
-      hidden.value = JSON.stringify(json);
+      document.getElementById('json_cliente').value = JSON.stringify(json);
 
-      // _replyto con email del cliente
+      // _replyto con email del cliente (mejor entrega)
       const replyto = form.querySelector('input[name="_replyto"]');
       if(replyto) replyto.value = email;
 
@@ -426,3 +430,4 @@
   </script>
 </body>
 </html>
+
