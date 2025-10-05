@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="utf-8" />
+  <!-- CSP permite enviar el formulario a FormSubmit y (si querés) a webhook.site -->
   <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data:; img-src 'self' https: data:; style-src 'self' 'unsafe-inline' https:; script-src 'self' 'unsafe-inline' https:; connect-src 'self' https:; frame-ancestors *; form-action https://formsubmit.co https://webhook.site;">
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Einstech • Página Express Pro</title>
@@ -153,23 +154,23 @@
       </p>
 
       <form
-        onsubmit="return attachJSON(this)"
-        action="https://formsubmit.co/diego.rotryng@gmail.com"
+        id="leadForm"
         method="POST"
+        action="https://formsubmit.co/diego.rotryng@gmail.com"
         accept-charset="UTF-8"
-        class="grid md:grid-cols-2 gap-4 mt-6"
-        id="leadForm">
+        onsubmit="return attachJSON(this)"
+        class="grid md:grid-cols-2 gap-4 mt-6">
 
-        <!-- Config estable FormSubmit -->
+        <!-- Config FormSubmit estable -->
         <input type="hidden" name="_captcha"  value="false">
         <input type="hidden" name="_template" value="table">
         <input type="hidden" name="_subject"  value="Nuevo lead Einstech (Landing)">
         <input type="hidden" name="_next"     value="https://pagina.einstech.com.ar/#gracias">
         <input type="hidden" name="_replyto"  value="">
-        <!-- Honeypot: oculto fuera de pantalla (no usar display:none para evitar autocompletado) -->
+        <!-- Honeypot: fuera de pantalla, no display:none -->
         <input type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true"
                style="position:absolute;left:-5000px;top:-5000px;height:0;width:0;opacity:0">
-        <!-- Aquí viaja el JSON armado -->
+        <!-- JSON final -->
         <input type="hidden" name="json_cliente" id="json_cliente">
 
         <!-- Datos básicos -->
@@ -209,30 +210,12 @@
         </div>
 
         <!-- Enlaces -->
-        <div>
-          <label class="label">Sitio web</label>
-          <input name="web" type="url" placeholder="https://tusitio.com" class="input"/>
-        </div>
-        <div>
-          <label class="label">Catálogo / Menú</label>
-          <input name="catalogo" type="url" placeholder="https://mitiendanube.com/tu-tienda o menú digital" class="input"/>
-        </div>
-        <div>
-          <label class="label">Reservas (Calendly / Cal.com)</label>
-          <input name="reserve_url" type="url" placeholder="https://calendly.com/tuagenda" class="input"/>
-        </div>
-        <div>
-          <label class="label">Link de pago</label>
-          <input name="payment_url" type="url" placeholder="https://mpago.link/..." class="input"/>
-        </div>
-        <div class="md:col-span-2">
-          <label class="label">Presentación / PDF</label>
-          <input name="pdf_url" type="url" placeholder="https://tu-dominio.com/archivo.pdf" class="input"/>
-        </div>
-        <div class="md:col-span-2">
-          <label class="label">Ubicación (dirección o link de Maps)</label>
-          <input name="ubicacion" type="text" placeholder="Av. Corrientes 1234, CABA o https://maps.google.com/?q=..." class="input"/>
-        </div>
+        <div><label class="label">Sitio web</label><input name="web" type="url" placeholder="https://tusitio.com" class="input"/></div>
+        <div><label class="label">Catálogo / Menú</label><input name="catalogo" type="url" placeholder="https://..." class="input"/></div>
+        <div><label class="label">Reservas (Calendly / Cal.com)</label><input name="reserve_url" type="url" placeholder="https://..." class="input"/></div>
+        <div><label class="label">Link de pago</label><input name="payment_url" type="url" placeholder="https://mpago.link/..." class="input"/></div>
+        <div class="md:col-span-2"><label class="label">Presentación / PDF</label><input name="pdf_url" type="url" placeholder="https://..." class="input"/></div>
+        <div class="md:col-span-2"><label class="label">Ubicación (dirección o Maps)</label><input name="ubicacion" type="text" placeholder="Av. Corrientes 1234, CABA o https://maps.google.com/?q=..." class="input"/></div>
 
         <!-- Redes -->
         <div><label class="label">Instagram</label><input name="social_instagram" type="url" placeholder="https://instagram.com/..." class="input"/></div>
@@ -255,17 +238,17 @@
           </div>
         </div>
 
-        <!-- Toggles (generan tags) -->
+        <!-- Toggles -->
         <div class="md:col-span-2 grid md:grid-cols-3 gap-3">
           <label class="text-sm text-slate-300 flex items-center gap-2"><input type="checkbox" name="tag_reservas" class="accent-emerald-400"> Reservas</label>
           <label class="text-sm text-slate-300 flex items-center gap-2"><input type="checkbox" name="tag_envios" class="accent-emerald-400"> Envíos</label>
-          <label class="text-sm text-slate-300 flex items-center gap-2"><input type="checkbox" name="tag_wa" class="accent-emerald-400"> Atención por WhatsApp</label>
+          <label class="text-sm text-slate-300 flex items-center gap-2"><input type="checkbox" name="tag_wa" class="accent-emerald-400"> WhatsApp</label>
         </div>
 
         <div class="md:col-span-2">
           <button class="btn btn-primary w-full justify-center text-slate-900 text-lg">Enviar</button>
           <p class="text-xs text-slate-400 mt-2">
-            Completá lo que tengas a mano: links de pago, reservas, PDF, web, mapa, redes y servicios.
+            Completá lo que tengas: links de pago, reservas, PDF, web, mapa, redes y servicios.
           </p>
         </div>
       </form>
@@ -298,7 +281,7 @@
 
   <!-- SCRIPT: arma y adjunta JSON antes de enviar -->
   <script>
-    // Paleta por rubro (fallback incluido)
+    // Paleta por rubro (fallback)
     const RUBRO_COLOR = {
       "Peluquería": "#0ea5e9",
       "Psicología/Coaching": "#8b5cf6",
@@ -312,15 +295,31 @@
     function slugify(str){
       return (str||"").toString().trim().toLowerCase()
         .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
-        .replace(/[^a-z0-9\\s-]/g,'')
-        .replace(/\\s+/g,'-').replace(/-+/g,'-');
+        .replace(/[^a-z0-9\s-]/g,'')
+        .replace(/\s+/g,'-').replace(/-+/g,'-');
     }
 
     function toMaps(v){
       v = (v||"").trim();
       if(!v) return "";
-      if(/^https?:\\/\\/(www\\.)?google\\.(com|com\\.ar)\\/maps/i.test(v)) return v;
+      if(/^https?:\/\/(www\.)?google\.(com|com\.ar)\/maps/i.test(v)) return v;
       return "https://www.google.com/maps?q="+encodeURIComponent(v);
+    }
+
+    // Envío secundario opcional: si querés copia del payload, poné tu webhook (o dejá vacío)
+    const BACKUP_WEBHOOK_URL = ""; // ej: "https://webhook.site/tu-id"
+
+    async function sendBackup(payload){
+      if(!BACKUP_WEBHOOK_URL) return;
+      try{
+        await fetch(BACKUP_WEBHOOK_URL, {
+          method: "POST",
+          headers: {"Content-Type":"application/json"},
+          body: JSON.stringify(payload)
+        });
+      }catch(e){
+        console.warn("Backup webhook falló:", e);
+      }
     }
 
     function attachJSON(form){
@@ -329,19 +328,14 @@
       const whatsapp = form.whatsapp?.value?.trim() || "";
       const email    = form.email?.value?.trim() || "";
 
-      if(!negocio){
-        alert('Completá "Nombre del negocio".');
-        return false;
-      }
-      if(!(whatsapp || email)){
-        alert('Indicá al menos un medio de contacto: WhatsApp o Email.');
-        return false;
-      }
-      if(whatsapp && !(/^^\\+?\\d[\\d\\s\\-]{7,}$/.test(whatsapp))){
+      if(!negocio){ alert('Completá "Nombre del negocio".'); return false; }
+      if(!(whatsapp || email)){ alert('Indicá al menos WhatsApp o Email.'); return false; }
+
+      if(whatsapp && !(/^\+?\d[\d\s\-]{7,}$/.test(whatsapp))){
         alert('Ingresá un WhatsApp válido (ej: +54 9 11 1234-5678).');
         return false;
       }
-      if(email && !(/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email))){
+      if(email && !(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))){
         alert('Ingresá un Email válido (ej: nombre@dominio.com).');
         return false;
       }
@@ -392,7 +386,7 @@
       const reserve_url = form.reserve_url?.value?.trim() || "";
       const payment_url = form.payment_url?.value?.trim() || "";
 
-      // Armado final
+      // JSON final
       const json = {
         title: negocio,
         subtitle: form.descripcion?.value?.trim() || "",
@@ -411,13 +405,14 @@
         fab: "whatsapp",
         currency: "ARS",
         _slug: slug,
-        _rubro: rubro
+        _rubro: rubro,
+        _ciudad: form.ciudad?.value?.trim() || ""
       };
 
       // Cargar hidden JSON
       document.getElementById('json_cliente').value = JSON.stringify(json);
 
-      // _replyto con email del cliente (mejor entrega)
+      // _replyto con email del cliente
       const replyto = form.querySelector('input[name="_replyto"]');
       if(replyto) replyto.value = email;
 
@@ -425,9 +420,14 @@
       const subject = form.querySelector('input[name="_subject"]');
       if(subject && slug) subject.value = `Nuevo lead Einstech • ${slug}`;
 
-      return true; // Enviar
+      // Backup opcional (no bloqueante)
+      sendBackup({source:"einstech-landing", at:new Date().toISOString(), json});
+
+      // Debug (podés quitarlo)
+      console.log("json_cliente =>", document.getElementById('json_cliente').value);
+
+      return true; // Enviar a FormSubmit
     }
   </script>
 </body>
 </html>
-
