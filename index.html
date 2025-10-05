@@ -2,8 +2,14 @@
 <html lang="es">
 <head>
   <meta charset="utf-8" />
-  <!-- CSP permite enviar el formulario a FormSubmit y (si querés) a webhook.site -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self' https: data:; img-src 'self' https: data:; style-src 'self' 'unsafe-inline' https:; script-src 'self' 'unsafe-inline' https:; connect-src 'self' https:; frame-ancestors *; form-action https://formsubmit.co https://webhook.site;">
+  <!-- CSP: habilita requests a FormSubmit (y webhook opcional si lo usás) -->
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self' https: data:;
+                 img-src 'self' https: data:;
+                 style-src 'self' 'unsafe-inline' https:;
+                 script-src 'self' 'unsafe-inline' https:;
+                 connect-src 'self' https://formsubmit.co https://webhook.site;
+                 frame-ancestors *;">
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Einstech • Página Express Pro</title>
   <meta name="description" content="Tu mini web profesional con WhatsApp, pagos y reservas. Subdominio propio en minutos." />
@@ -156,21 +162,22 @@
       <form
         id="leadForm"
         method="POST"
-        action="https://formsubmit.co/diego.rotryng@gmail.com"
+        action="#"
         accept-charset="UTF-8"
         onsubmit="return attachJSON(this)"
         class="grid md:grid-cols-2 gap-4 mt-6">
 
-        <!-- Config FormSubmit estable -->
+        <!-- (no usamos _next; manejamos resultado en la misma página) -->
         <input type="hidden" name="_captcha"  value="false">
         <input type="hidden" name="_template" value="table">
         <input type="hidden" name="_subject"  value="Nuevo lead Einstech (Landing)">
-        <input type="hidden" name="_next"     value="https://pagina.einstech.com.ar/#gracias">
         <input type="hidden" name="_replyto"  value="">
-        <!-- Honeypot: fuera de pantalla, no display:none -->
+
+        <!-- Honeypot: debe quedar vacío -->
         <input type="text" name="_honey" tabindex="-1" autocomplete="off" aria-hidden="true"
                style="position:absolute;left:-5000px;top:-5000px;height:0;width:0;opacity:0">
-        <!-- JSON final -->
+
+        <!-- JSON final oculto -->
         <input type="hidden" name="json_cliente" id="json_cliente">
 
         <!-- Datos básicos -->
@@ -252,6 +259,9 @@
           </p>
         </div>
       </form>
+
+      <!-- Resultado post-envío -->
+      <div id="postResult" class="mt-4 text-sm text-slate-300 hidden"></div>
     </div>
   </section>
 
@@ -279,9 +289,11 @@
     </div>
   </footer>
 
-  <!-- SCRIPT: arma y adjunta JSON antes de enviar -->
+  <!-- SCRIPT: JSON + AJAX + descarga + backup opcional -->
   <script>
-    // Paleta por rubro (fallback)
+    const FORMSUBMIT_EMAIL = "diego.rotryng@gmail.com";
+    const BACKUP_WEBHOOK_URL = ""; // opcional: pegá aquí tu URL de webhook.site si querés copia
+
     const RUBRO_COLOR = {
       "Peluquería": "#0ea5e9",
       "Psicología/Coaching": "#8b5cf6",
@@ -295,60 +307,62 @@
     function slugify(str){
       return (str||"").toString().trim().toLowerCase()
         .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
-        .replace(/[^a-z0-9\s-]/g,'')
-        .replace(/\s+/g,'-').replace(/-+/g,'-');
+        .replace(/[^a-z0-9\\s-]/g,'')
+        .replace(/\\s+/g,'-').replace(/-+/g,'-');
     }
 
     function toMaps(v){
       v = (v||"").trim();
       if(!v) return "";
-      if(/^https?:\/\/(www\.)?google\.(com|com\.ar)\/maps/i.test(v)) return v;
+      if(/^https?:\\/\\/(www\\.)?google\\.(com|com\\.ar)\\/maps/i.test(v)) return v;
       return "https://www.google.com/maps?q="+encodeURIComponent(v);
     }
-
-    // Envío secundario opcional: si querés copia del payload, poné tu webhook (o dejá vacío)
-    const BACKUP_WEBHOOK_URL = ""; // ej: "https://webhook.site/tu-id"
 
     async function sendBackup(payload){
       if(!BACKUP_WEBHOOK_URL) return;
       try{
-        await fetch(BACKUP_WEBHOOK_URL, {
-          method: "POST",
-          headers: {"Content-Type":"application/json"},
-          body: JSON.stringify(payload)
-        });
-      }catch(e){
-        console.warn("Backup webhook falló:", e);
-      }
+        if(navigator.sendBeacon){
+          const blob = new Blob([JSON.stringify(payload)], {type: "application/json"});
+          navigator.sendBeacon(BACKUP_WEBHOOK_URL, blob);
+        }else{
+          await fetch(BACKUP_WEBHOOK_URL, {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(payload)});
+        }
+      }catch(e){ console.warn("Backup webhook falló:", e); }
     }
 
-    function attachJSON(form){
-      // Requisitos mínimos: negocio + (whatsapp o email)
+    function downloadJSON(filename, jsonString){
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(new Blob([jsonString], {type:'application/json'}));
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove(); }, 400);
+    }
+
+    async function attachJSON(form){
+      const box = document.getElementById('postResult');
+      const show = (html) => { box.classList.remove('hidden'); box.innerHTML = html; };
+
       const negocio  = form.negocio?.value?.trim() || "";
       const whatsapp = form.whatsapp?.value?.trim() || "";
       const email    = form.email?.value?.trim() || "";
+      const honey    = form._honey?.value?.trim() || "";
 
+      if(honey){ return false; } // bot
       if(!negocio){ alert('Completá "Nombre del negocio".'); return false; }
       if(!(whatsapp || email)){ alert('Indicá al menos WhatsApp o Email.'); return false; }
-
-      if(whatsapp && !(/^\+?\d[\d\s\-]{7,}$/.test(whatsapp))){
-        alert('Ingresá un WhatsApp válido (ej: +54 9 11 1234-5678).');
-        return false;
-      }
-      if(email && !(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))){
-        alert('Ingresá un Email válido (ej: nombre@dominio.com).');
-        return false;
-      }
+      if(whatsapp && !(/^\+?\d[\\d\\s\\-]{7,}$/.test(whatsapp))){ alert('Ingresá un WhatsApp válido.'); return false; }
+      if(email && !(/^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email))){ alert('Ingresá un Email válido.'); return false; }
 
       const rubro   = form.rubro?.value?.trim() || "Otro";
       const color   = RUBRO_COLOR[rubro] || RUBRO_COLOR["Otro"];
       const slug    = slugify(negocio);
 
-      // Productos
+      // Productos/Servicios
       const products = [];
       [["prod1_nombre","prod1_precio"],["prod2_nombre","prod2_precio"],["prod3_nombre","prod3_precio"]]
         .forEach(([n,p])=>{
-          const name = form[n]?.value?.trim();
+          const name  = form[n]?.value?.trim();
           const price = form[p]?.value?.trim();
           if(name){
             const item = { title: name };
@@ -382,7 +396,7 @@
       if(ubic)     links.push({ icon:"📍", title:"Cómo llegar",     url:toMaps(ubic) });
       if(pdf_url)  links.push({ icon:"📄", title:"Presentación / PDF", url:pdf_url });
 
-      // CTA especiales
+      // CTA
       const reserve_url = form.reserve_url?.value?.trim() || "";
       const payment_url = form.payment_url?.value?.trim() || "";
 
@@ -409,24 +423,48 @@
         _ciudad: form.ciudad?.value?.trim() || ""
       };
 
-      // Cargar hidden JSON
+      // Volcar al hidden
       document.getElementById('json_cliente').value = JSON.stringify(json);
 
-      // _replyto con email del cliente
+      // Reply-To
       const replyto = form.querySelector('input[name="_replyto"]');
       if(replyto) replyto.value = email;
 
-      // Personalizar subject
-      const subject = form.querySelector('input[name="_subject"]');
-      if(subject && slug) subject.value = `Nuevo lead Einstech • ${slug}`;
-
-      // Backup opcional (no bloqueante)
+      // Backup (no bloquea)
       sendBackup({source:"einstech-landing", at:new Date().toISOString(), json});
 
-      // Debug (podés quitarlo)
-      console.log("json_cliente =>", document.getElementById('json_cliente').value);
+      // Descarga local inmediata
+      downloadJSON(`${slug || 'cliente'}.json`, JSON.stringify(json, null, 2));
 
-      return true; // Enviar a FormSubmit
+      // Envío AJAX a FormSubmit
+      try{
+        const fd = new FormData(form);
+        const subject = form.querySelector('input[name="_subject"]');
+        if(subject && slug) subject.value = `Nuevo lead Einstech • ${slug}`;
+        const res = await fetch(`https://formsubmit.co/ajax/${encodeURIComponent(FORMSUBMIT_EMAIL)}`, {
+          method: "POST",
+          headers: { "Accept": "application/json" },
+          body: fd
+        });
+
+        if(!res.ok){
+          const txt = await res.text();
+          show(`⚠️ <b>No pudimos confirmar el envío por email</b> (HTTP ${res.status}).<br>Guardamos el JSON en tu equipo y (si configuraste) enviamos copia al backup.<br><small>${txt.slice(0,300)}</small>`);
+          return false;
+        }
+
+        const data = await res.json();
+        if(data.success === "true"){
+          show(`✅ <b>¡Formulario enviado!</b> Debería llegarte a <b>${FORMSUBMIT_EMAIL}</b>.<br>También descargamos el JSON y (si configuraste) enviamos copia al backup.`);
+        }else{
+          show(`⚠️ <b>Respuesta inesperada de FormSubmit</b>: ${JSON.stringify(data)}`);
+        }
+      }catch(e){
+        show(`⚠️ <b>Error de red</b>. Guardamos el JSON y, si pusiste backup, lo mandamos allí.<br><small>${e && (e.message || e)}</small>`);
+        return false;
+      }
+
+      return false; // no recargar la página
     }
   </script>
 </body>
