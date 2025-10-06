@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Einstech • Página Express Pro</title>
+  <meta name="description" content="Tu mini web profesional con WhatsApp, pagos y reservas. Subdominio propio en minutos."/>
+  <meta name="theme-color" content="#0b1220"/>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root { --bg:#0b1220; --card:#101a33; --muted:#9eb2ce; --brand:#22c55e; }
+    body{background:radial-gradient(1200px 700px at 20% -10%,#172246,#0b1220),var(--bg);color:#e9f0ff;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+    .glass{background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.03));border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(6px);border-radius:1rem}
+    .btn{display:inline-flex;align-items:center;gap:.6rem;border-radius:.9rem;padding:.9rem 1.2rem;font-weight:700;cursor:pointer}
+    .btn-primary{background:var(--brand);color:#072812;border:1px solid #1aa24d}
+    input,textarea,select{background:#0e1a33;color:white;border:1px solid rgba(255,255,255,.1);border-radius:.7rem;padding:.75rem;width:100%}
+    label{font-size:.9rem;color:#cfd9f7;display:block;margin-top:.5rem}
+    .chip{background:#0f1c3a;border:1px solid #21325a;color:#cfe2ff;border-radius:999px;padding:.45rem .8rem;font-size:.85rem}
+    .ok{background:#22c55e;color:#072812}
+    .warn{background:#a855f7;color:white}
+    .err{background:#ef4444;color:white}
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <header class="sticky top-0 z-30 backdrop-blur bg-black/20">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-emerald-500 grid place-items-center font-black">E</div>
+        <span class="font-extrabold tracking-tight">Einstech</span>
+        <span class="hidden md:inline text-emerald-400/90 font-semibold ml-2">Página Express Pro</span>
+      </div>
+      <nav class="hidden md:flex items-center gap-6 text-sm text-slate-200/90">
+        <a href="#como" class="hover:text-white">Cómo funciona</a>
+        <a href="#ejemplos" class="hover:text-white">Ejemplos</a>
+        <a href="#planes" class="hover:text-white">Precios</a>
+        <a href="#form" class="btn btn-primary">Quiero mi página</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- HERO -->
+  <section class="max-w-7xl mx-auto px-4 pt-16 pb-10">
+    <div class="grid md:grid-cols-2 gap-10 items-center">
+      <div>
+        <h1 class="text-4xl md:text-5xl font-extrabold leading-tight">
+          Tu página profesional en <span class="text-emerald-400">5 minutos</span>.
+        </h1>
+        <p class="text-lg text-slate-300/90 mt-4">
+          Un solo link con todo: tu marca, WhatsApp directo, pagos y reservas. Subdominio propio y listo para vender.
+        </p>
+        <div class="flex flex-wrap gap-2 mt-6">
+          <span class="chip">Subdominio .einstech.com.ar</span>
+          <span class="chip">WhatsApp directo</span>
+          <span class="chip">Pagos / Reservas</span>
+          <span class="chip">SEO + Google</span>
+        </div>
+        <div class="flex items-center gap-3 mt-8">
+          <a href="#form" class="btn btn-primary">Quiero mi página ahora</a>
+          <a href="#ejemplos" class="btn bg-white/10">Ver ejemplos</a>
+        </div>
+      </div>
+      <div>
+        <div class="glass p-5">
+          <div class="grid grid-cols-3 gap-3 text-center">
+            <div class="glass p-3"><div class="text-2xl">💬</div><div class="text-xs text-slate-300">WhatsApp</div></div>
+            <div class="glass p-3"><div class="text-2xl">💳</div><div class="text-xs text-slate-300">Pagos</div></div>
+            <div class="glass p-3"><div class="text-2xl">📅</div><div class="text-xs text-slate-300">Reservas</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMO -->
+  <section id="como" class="max-w-7xl mx-auto px-4 py-10">
+    <div class="grid md:grid-cols-3 gap-6">
+      <div class="glass p-6"><h3 class="text-xl font-bold">❌ Muchos links</h3><p class="text-slate-300 mt-2">Tus clientes no saben dónde entrar.</p></div>
+      <div class="glass p-6"><h3 class="text-xl font-bold">❌ Una web completa es cara</h3><p class="text-slate-300 mt-2">Meses de demora y alto costo.</p></div>
+      <div class="glass p-6"><h3 class="text-xl font-bold">✅ Einstech te lo resuelve</h3><p class="text-slate-300 mt-2">Una página con WhatsApp, pagos y reservas en minutos.</p></div>
+    </div>
+  </section>
+
+  <!-- EJEMPLOS -->
+  <section id="ejemplos" class="max-w-7xl mx-auto px-4 py-10">
+    <h2 class="text-3xl font-extrabold">Ejemplos reales</h2>
+    <div class="grid md:grid-cols-3 gap-6 mt-6">
+      <article class="glass p-5"><div class="font-bold">Clarisa Rozenbaum</div><p class="text-sm text-slate-300">Psicóloga & Coach</p></article>
+      <article class="glass p-5"><div class="font-bold">Panadería Julio</div><p class="text-sm text-slate-300">Pan artesanal • Delivery</p></article>
+      <article class="glass p-5"><div class="font-bold">Glow Studio</div><p class="text-sm text-slate-300">Peluquería & Color</p></article>
+    </div>
+  </section>
+
+  <!-- PLANES -->
+  <section id="planes" class="max-w-7xl mx-auto px-4 py-10">
+    <h2 class="text-3xl font-extrabold">Precios</h2>
+    <div class="grid md:grid-cols-2 gap-6 mt-6">
+      <div class="glass p-6 ring-2 ring-emerald-500/60">
+        <h3 class="text-2xl font-extrabold">Pro</h3>
+        <p class="text-slate-300 mt-2">Pagos, reservas y personalización.</p>
+        <ul class="mt-4 text-sm text-slate-200 space-y-1">
+          <li>• Subdominio .einstech.com.ar</li>
+          <li>• WhatsApp + enlaces ilimitados</li>
+          <li>• Link de pago / Reservas</li>
+          <li>• Sin marca Einstech</li>
+        </ul>
+        <div class="mt-6 font-black text-3xl">ARS 7.000 / mes</div>
+      </div>
+      <div class="glass p-6">
+        <h3 class="text-2xl font-extrabold">Teams</h3>
+        <p class="text-slate-300 mt-2">Varios perfiles bajo tu dominio.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- FORM -->
+  <section id="form" class="max-w-4xl mx-auto px-4 py-14">
+    <div class="glass p-6">
+      <h2 class="text-3xl font-extrabold">Armemos tu página ahora</h2>
+      <p class="text-slate-300 mt-1">
+        Obligatorio: <b>Nombre del negocio</b> y <b>WhatsApp o Email</b>. Cuantos más datos completes, mejor queda tu página ✨.
+      </p>
+
+      <!-- Mensajes de resultado -->
+      <div id="msg" class="hidden mt-4 p-3 rounded font-semibold"></div>
+
+      <form id="leadForm" class="grid md:grid-cols-2 gap-4 mt-6">
+        <!-- FormSubmit config (se agregan via fetch AJAX) -->
+        <input type="hidden" name="_subject" value="Nuevo lead Einstech (Landing)">
+        <input type="hidden" name="_template" value="table">
+
+        <!-- Anti-bot -->
+        <input type="text" name="_honey" id="hp_field" style="display:none">
+        <input type="hidden" name="_started_at" id="started_at">
+        <div class="md:col-span-2">
+          <label>Verificación anti-bot: resolvé la suma</label>
+          <div class="flex gap-2 items-center">
+            <input type="text" id="challenge_text" value="0 + 0 =" disabled
+                   class="w-28 text-center bg-[#0e1a33] text-[#9fb4d1] border border-white/10 rounded"/>
+            <input type="number" id="challenge_answer" name="challenge_answer" placeholder="Resultado"
+                   required class="flex-1"/>
+          </div>
+          <small class="text-slate-400">Es para evitar spam 🤖</small>
+        </div>
+
+        <!-- Datos principales -->
+        <div class="md:col-span-2">
+          <label>Nombre del negocio *</label>
+          <input name="negocio" required placeholder="Ej: Glow Studio"/>
+        </div>
+        <div>
+          <label>WhatsApp *</label>
+          <input name="whatsapp" type="tel" required placeholder="11 1234 5678"/>
+          <small id="waPreview" class="text-slate-400"></small>
+        </div>
+        <div>
+          <label>Email</label>
+          <input name="email" type="email" placeholder="nombre@dominio.com"/>
+        </div>
+
+        <div>
+          <label>Rubro / Profesión</label>
+          <input name="rubro" placeholder="Peluquería, Psicología, Gastronomía…"/>
+        </div>
+        <div>
+          <label>Ciudad / País</label>
+          <input name="ciudad" placeholder="CABA, Argentina"/>
+        </div>
+
+        <!-- Redes -->
+        <div class="md:col-span-2"><label>Instagram</label><input name="social_instagram" placeholder="usuario o URL"/></div>
+        <div class="md:col-span-2"><label>Facebook</label><input name="social_facebook" placeholder="usuario o URL"/></div>
+        <div class="md:col-span-2"><label>YouTube</label><input name="social_youtube" placeholder="@canal o URL"/></div>
+        <div class="md:col-span-2"><label>TikTok</label><input name="social_tiktok" placeholder="@usuario o URL"/></div>
+
+        <!-- Descripción y productos -->
+        <div class="md:col-span-2"><label>Descripción corta</label><input name="descripcion" maxlength="140" placeholder="Qué hacés en 1 línea"/></div>
+
+        <div>
+          <label>Producto / Servicio 1</label>
+          <input name="prod1_nombre" placeholder="Ej: Corte clásico"/>
+          <input name="prod1_precio" placeholder="Precio (ej: 12000 o $ 12.000)" class="mt-2"/>
+        </div>
+        <div>
+          <label>Producto / Servicio 2</label>
+          <input name="prod2_nombre"/>
+          <input name="prod2_precio" placeholder="Precio" class="mt-2"/>
+        </div>
+        <div>
+          <label>Producto / Servicio 3</label>
+          <input name="prod3_nombre"/>
+          <input name="prod3_precio" placeholder="Precio" class="mt-2"/>
+        </div>
+
+        <!-- Integraciones -->
+        <div><label>Link de pago</label><input name="payment_url" type="url" placeholder="MercadoPago, PayPal, Stripe…"/></div>
+        <div><label>Reservas</label><input name="reserve_url" type="url" placeholder="Calendly, Cal.com…"/></div>
+        <div><label>Catálogo / PDF</label><input name="pdf_url" type="url" placeholder="Link a PDF o catálogo"/></div>
+        <div class="md:col-span-2"><label>Ubicación</label><input name="ubicacion" placeholder="Dirección o URL de Maps"/></div>
+
+        <!-- JSON generado (oculto) -->
+        <textarea id="json_cliente" name="json_cliente" hidden></textarea>
+
+        <div class="md:col-span-2">
+          <button id="sendBtn" type="submit" class="btn btn-primary w-full">Enviar</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <footer class="border-t border-white/10">
+    <div class="max-w-7xl mx-auto px-4 py-8 text-sm text-slate-400 flex flex-col md:flex-row items-center justify-between gap-3">
+      <div>© 2025 Einstech. Todos los derechos reservados.</div>
+      <div class="flex items-center gap-4">
+        <a href="#form" class="hover:text-white">Quiero mi página</a>
+        <span>•</span>
+        <a href="#planes" class="hover:text-white">Precios</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    /* ================= Helpers & Normalizadores ================= */
+    function slugify(str){
+      return (str||"").toString().trim().toLowerCase()
+        .normalize('NFD').replace(/[\u0300-\u036f]/g,'')
+        .replace(/[^a-z0-9\s-]/g,'')
+        .replace(/\s+/g,'-').replace(/-+/g,'-').replace(/^[-]+|[-]+$/g,'');
+    }
+    function isUrl(v){ try { new URL(v); return true; } catch { return false; } }
+    function toHttps(v){ if(!v) return ""; return /^https?:\/\//i.test(v) ? v : "https://" + v.replace(/^\/+/, ""); }
+    function socialUrl(kind, v){
+      v = (v||"").trim(); if(!v) return "";
+      if(isUrl(v)) return toHttps(v);
+      const user = v.replace(/^@/,"").replace(/\/+$/,"");
+      const base = {instagram:"https://instagram.com/",facebook:"https://facebook.com/",youtube:"https://youtube.com/@",tiktok:"https://www.tiktok.com/@"}[kind] || "";
+      return base ? base + user : toHttps(v);
+    }
+    function toMaps(v){
+      v=(v||"").trim(); if(!v) return "";
+      if(/^https?:\/\/(www\.)?google\.(com|com\.ar)\/maps/i.test(v)) return toHttps(v);
+      return "https://www.google.com/maps?q=" + encodeURIComponent(v);
+    }
+    function normalizeARPhone(raw){
+      let s=(raw||"").toString().replace(/[^\d+]/g,""); if(!s) return "";
+      if(s.startsWith("+54")) s=s.replace("+","");
+      if(/^54/.test(s)){ s=s.replace(/^549?0?/, "549"); return "+ " + s.replace(/^(\d{2})/,"+$1"); }
+      s=s.replace(/^0+/, "").replace(/^15/,"");
+      return "+54 9 " + s;
+    }
+    function normalizePrice(v){
+      v=(v||"").toString().trim(); if(!v) return "";
+      const digits=v.replace(/[^\d]/g,""); if(!digits) return "";
+      return "$ " + digits.replace(/\B(?=(\d{3})+(?!\d))/g,".");
+    }
+    function pruneEmpty(obj){
+      if(Array.isArray(obj)){
+        return obj.map(pruneEmpty).filter(v=>{
+          if(v==null) return false;
+          if(typeof v==="object" && !Array.isArray(v) && Object.keys(v).length===0) return false;
+          if(Array.isArray(v) && v.length===0) return false;
+          if(typeof v==="string" && v.trim()==="") return false;
+          return true;
+        });
+      }
+      if(obj && typeof obj==="object"){
+        const out={}; for(const k of Object.keys(obj)){ const v=pruneEmpty(obj[k]);
+          const drop = v==null || (typeof v==="string" && v.trim()==="") ||
+            (Array.isArray(v) && v.length===0) || (typeof v==="object" && !Array.isArray(v) && Object.keys(v).length===0);
+          if(!drop) out[k]=v;
+        }
+        return out;
+      }
+      return obj;
+    }
+
+    /* ================= Antibot simple ================= */
+    const MIN_SECONDS = 4;
+    let _sumA=0, _sumB=0;
+    function newChallenge(){
+      _sumA = Math.floor(Math.random()*10)+3; // 3..12
+      _sumB = Math.floor(Math.random()*10)+3;
+      document.getElementById('challenge_text').value = `${_sumA} + ${_sumB} =`;
+      document.getElementById('challenge_answer').value = '';
+    }
+    window.addEventListener('DOMContentLoaded', ()=>{
+      document.getElementById('started_at').value = Date.now().toString();
+      newChallenge();
+    });
+
+    // Preview WhatsApp
+    const waInput = document.querySelector('input[name="whatsapp"]');
+    const waOut = document.getElementById('waPreview');
+    function refreshWa(){
+      const norm = normalizeARPhone(waInput.value);
+      waOut.textContent = norm ? `Se enviará como: ${norm}` : '';
+    }
+    waInput.addEventListener('input', refreshWa);
+
+    /* ================= Envío AJAX a FormSubmit ================= */
+    const FORM_ENDPOINT = "https://formsubmit.co/ajax/df4363d81046a39748aef96e2c504c3e"; // tu token
+    const form = document.getElementById('leadForm');
+    const msg = document.getElementById('msg');
+    const btn = document.getElementById('sendBtn');
+
+    form.addEventListener('submit', async (e)=>{
+      e.preventDefault();
+
+      // Anti-bot: honeypot
+      if((document.getElementById('hp_field').value||'').trim()){
+        showMsg("Error de validación.", "err"); return;
+      }
+      // Anti-bot: tiempo mínimo
+      const started=parseInt(document.getElementById('started_at').value||'0',10);
+      const elapsed=(Date.now()-started)/1000;
+      if(isFinite(elapsed) && elapsed<MIN_SECONDS){
+        showMsg("Verificación: completaste demasiado rápido. Probá de nuevo.", "warn");
+        newChallenge(); document.getElementById('started_at').value = Date.now().toString();
+        return;
+      }
+      // Anti-bot: suma
+      const ans=parseInt((document.getElementById('challenge_answer').value||'').trim(),10);
+      if(!Number.isFinite(ans) || ans!==(_sumA+_sumB)){
+        showMsg("Respuesta incorrecta. Volvé a intentar la suma.", "warn");
+        newChallenge(); return;
+      }
+
+      // Recolectar datos
+      const fd = new FormData(form);
+      const data = Object.fromEntries(fd.entries());
+
+      // Validación mínima negocio + (whatsapp o email)
+      if(!(data.negocio||'').trim() || (!data.whatsapp && !data.email)){
+        showMsg("Completá: Nombre del negocio y WhatsApp o Email.", "warn"); return;
+      }
+
+      // Normalizaciones
+      const negocio = (data.negocio||'').trim();
+      const whatsapp = data.whatsapp ? normalizeARPhone(data.whatsapp) : "";
+      const email = (data.email||"").trim();
+
+      const json = {
+        title: negocio,
+        _slug: slugify(negocio),
+        whatsapp,
+        email,
+        rubro: (data.rubro||"").trim(),
+        ciudad: (data.ciudad||"").trim(),
+        descripcion: (data.descripcion||"").trim(),
+        social: {
+          instagram: socialUrl("instagram", data.social_instagram),
+          facebook:  socialUrl("facebook",  data.social_facebook),
+          youtube:   socialUrl("youtube",   data.social_youtube),
+          tiktok:    socialUrl("tiktok",    data.social_tiktok)
+        },
+        productos: [
+          { nombre: (data.prod1_nombre||"").trim(), precio: normalizePrice(data.prod1_precio) },
+          { nombre: (data.prod2_nombre||"").trim(), precio: normalizePrice(data.prod2_precio) },
+          { nombre: (data.prod3_nombre||"").trim(), precio: normalizePrice(data.prod3_precio) }
+        ],
+        integraciones: {
+          pago: (data.payment_url||"").trim(),
+          reservas: (data.reserve_url||"").trim(),
+          pdf: (data.pdf_url||"").trim()
+        },
+        ubicacion: toMaps(data.ubicacion),
+        _created_at: new Date().toISOString(),
+        _source: "landing"
+      };
+
+      const clean = pruneEmpty(json);
+
+      // Armar payload FormSubmit (campos sueltos + json_cliente)
+      const toSend = new FormData();
+      toSend.append("_subject", "Nuevo lead Einstech (Landing)");
+      toSend.append("_template", "table");
+      toSend.append("_captcha", "false");
+
+      // Campos visibles
+      toSend.append("negocio", negocio);
+      toSend.append("whatsapp", whatsapp);
+      toSend.append("email", email);
+      toSend.append("rubro", json.rubro||"");
+      toSend.append("ciudad", json.ciudad||"");
+      toSend.append("descripcion", json.descripcion||"");
+      toSend.append("social_instagram", json.social?.instagram||"");
+      toSend.append("social_facebook", json.social?.facebook||"");
+      toSend.append("social_youtube", json.social?.youtube||"");
+      toSend.append("social_tiktok", json.social?.tiktok||"");
+      (clean.productos||[]).forEach((p,i)=>{
+        toSend.append(`prod${i+1}_nombre`, p.nombre||"");
+        toSend.append(`prod${i+1}_precio`, p.precio||"");
+      });
+      toSend.append("payment_url", json.integraciones?.pago||"");
+      toSend.append("reserve_url", json.integraciones?.reservas||"");
+      toSend.append("pdf_url", json.integraciones?.pdf||"");
+      toSend.append("ubicacion", json.ubicacion||"");
+
+      // Bloque JSON listo para pegar
+      toSend.append("json_cliente", JSON.stringify(clean, null, 2));
+
+      // Enviar por AJAX (no salimos de la página)
+      disableBtn(true);
+      try{
+        const resp = await fetch(FORM_ENDPOINT, { method:"POST", body: toSend, headers:{ Accept:"application/json" } });
+        if(!resp.ok){
+          const txt = await resp.text();
+          showMsg("No pudimos enviar ahora. Probá más tarde.", "err");
+          console.warn("FormSubmit error:", resp.status, txt);
+        }else{
+          showMsg("¡Gracias! Recibimos tus datos ✅", "ok");
+          form.reset(); newChallenge(); refreshWa();
+        }
+      }catch(err){
+        console.error(err);
+        showMsg("No pudimos enviar ahora. Verificá tu conexión.", "err");
+      }finally{
+        disableBtn(false);
+      }
+    });
+
+    function showMsg(text, kind){
+      msg.className = "mt-4 p-3 rounded font-semibold " + (kind==="ok"?"ok":kind==="warn"?"warn":"err");
+      msg.textContent = text;
+      msg.classList.remove("hidden");
+    }
+    function disableBtn(b){
+      btn.disabled = b;
+      btn.style.opacity = b? .6 : 1;
+    }
+  </script>
+</body>
+</html>
